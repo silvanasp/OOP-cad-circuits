@@ -1,0 +1,83 @@
+@startuml
+
+skinparam classAttributeIconSize 0
+'skinparam linetype polyline
+
+abstract class Circuit {
+# name : String
++ {abstract} process()
+}
+
+class Component extends Circuit {
++ Component(numInputs : int, \n\t\t\t numOutputs : int)
++ process()
+}
+
+class And extends Circuit {
++ And()
++ And(numInputs : int)
++ process()
+}
+
+class Or extends Circuit {
++ Or()
++ Or(numInputs : int)
++ process()
+}
+
+class Not extends Circuit {
++ Not()
++ process()
+}
+
+And -[hidden]right- Or
+Or -[hidden]right- Not
+
+Component -left-> "\n1..*" Circuit : circuits
+
+Or -[hidden]left-> Component
+Not -[hidden]left-> Component
+And -[hidden]left-> Component
+
+
+note bottom of Component
+for (Circuit circ : circuits) {
+  circ.process();
+}
+end note
+
+package java.util {
+  abstract class Observable {
+  + addObserver(ob : Observer)
+  + removeObserver(ob : Observer)
+  + setChanged()
+  + notifyObservers()
+  }
+
+  interface Observer {
+  {abstract} update(arg0 : Observable, \n\t      arg1 : Object)
+  }
+}
+
+Observable -[hidden]right- Observer
+
+class Pin extends Observable implements Observer {
+- state : boolean
+- name : String
++ update(arg0 : Observable, \n\t\t arg1 : Object)
+}
+
+Circuit *-right-> "1..*\n" Pin : inputs
+Circuit *-right-> "1..*\n" Pin : outputs
+
+class Connection {
++ Connection(pinFrom : Pin, \n\t\t\t pinTo : Pin)
+}
+
+note bottom of Connection
+pinFrom.addObserver(pinTo);
+end note
+
+Pin -[hidden]right-> Connection
+
+@enduml

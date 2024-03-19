@@ -1,0 +1,101 @@
+@startuml
+
+skinparam classAttributeIconSize 0
+'skinparam linetype polyline
+
+interface Cloneable {
++ {abstract} clone()
+}
+
+abstract class Circuit implements Cloneable {
+# name : String
++ {abstract} process()
+}
+
+class Component extends Circuit {
++ Component(numInputs : int, \n\t\t\t numOutputs : int)
++ process()
++ clone()
+}
+
+class And extends Circuit {
++ And()
++ And(numInputs : int)
++ process()
++ clone()
+}
+
+class Or extends Circuit {
++ Or()
++ Or(numInputs : int)
++ process()
++ clone()
+}
+
+class Not extends Circuit {
++ Not()
++ process()
++ clone()
+}
+
+And -[hidden]right- Or
+
+' put Component to the right of And, Or, Not
+Or -right[hidden]-> Component
+Not -right[hidden]-> Component
+And -right[hidden]-> Component
+
+Component -left-> "\n1..*" Circuit : circuits
+
+'note bottom of Component
+'	public void process() {
+'		for (Circuit circ : circuits) {
+'			circ.process();
+'		}
+'	}
+'end note
+
+package java.util {
+  abstract class Observable {
+  + addObserver(ob : Observer)
+  + removeObserver(ob : Observer)
+  + setChanged()
+  + notifyObservers()
+  }
+
+  interface Observer {
+  {abstract} update(arg0 : Observable, \n\t      arg1 : Object)
+  }
+}
+
+Observable -[hidden]right- Observer
+
+class Pin extends Observable implements Observer {
+- state : boolean
+- name : String
++ update(arg0 : Observable, \n\t\t arg1 : Object)
+}
+
+Circuit *-right-> "1..*\n" Pin : inputs
+Circuit *-right-> "1..*\n" Pin : outputs
+
+class Connection {
+- pinFrom : Pin
+- pinTo : Pin
++ Connection(pinFrom : Pin, pinTo : Pin)
+}
+
+Component *-down-> "\t\t\t1..*" Connection : connections
+Connection *-up-> "2" Pin
+
+class Utils {
++ {static} boolean[] int2Binary()
++ {static} int binary2Int()
+}
+
+Pin -[hidden]right- Utils
+
+
+
+
+@enduml

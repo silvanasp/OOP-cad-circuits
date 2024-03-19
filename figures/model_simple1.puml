@@ -1,0 +1,41 @@
+@startuml
+
+skinparam classAttributeIconSize 0
+'skinparam linetype polyline
+
+abstract class Circuit {
+# name : String
++ {abstract} process()
+}
+
+class Component extends Circuit {
++ Component(numInputs : int, \n\t\t\t numOutputs : int)
++ process()
+}
+
+class And extends Circuit {
++ And()
++ And(numInputs : int)
++ process()
+}
+
+class Or extends Circuit {
++ Or()
++ Or(numInputs : int)
++ process()
+}
+
+class Not extends Circuit {
++ Not()
++ process()
+}
+
+And -[hidden]right- Or
+
+Component -left-> "\n1..*" Circuit : circuits
+
+Or -right[hidden]-> Component
+Not -right[hidden]-> Component
+And -right[hidden]-> Component
+
+@enduml
